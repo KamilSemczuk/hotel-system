@@ -1,0 +1,38 @@
+### Lista rezerwacji
+GET http://localhost:8080/api/reservations
+
+### Nowa rezerwacja
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "firstName": "Anna",
+  "lastName": "Nowak",
+  "email": "anna.nowak@example.com",
+  "phone": "600700800",
+  "checkIn": "2026-11-10",
+  "checkOut": "2026-11-13"
+}
+
+### Ta sama rezerwacja drugi raz -> 409 (pokój zajęty)
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "firstName": "Anna",
+  "lastName": "Nowak",
+  "email": "anna.nowak@example.com",
+  "checkIn": "2026-11-11",
+  "checkOut": "2026-11-12"
+}
+
+### Zameldowanie
+PATCH http://localhost:8080/api/reservations/2/check-in
+
+### Wymeldowanie
+PATCH http://localhost:8080/api/reservations/2/check-out
+
+### Anulowanie
+PATCH http://localhost:8080/api/reservations/1/cancel
