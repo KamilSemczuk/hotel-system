@@ -1,5 +1,6 @@
 package com.example.backend_spring.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,6 +22,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<Map<String, Object>> conflict(ConflictException e) {
         return error(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    // Naruszenie unikalności (np. ten sam numer pokoju) albo klucza obcego (usuwanie powiązanego rekordu)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> integrity(DataIntegrityViolationException e) {
+        return error(HttpStatus.CONFLICT,
+                "Operacja narusza spójność danych (duplikat albo rekord powiązany z innymi danymi)");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
