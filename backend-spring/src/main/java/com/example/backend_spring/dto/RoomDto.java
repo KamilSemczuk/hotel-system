@@ -13,9 +13,14 @@ public record RoomDto(
         String category,
         int capacity,
         BigDecimal basePrice,
-        List<String> amenities
+        List<String> amenities,
+        BigDecimal totalPrice   // cena za pobyt (tylko w /available), wyliczona przez .NET
 ) {
     public static RoomDto from(Room room) {
+        return from(room, null);
+    }
+
+    public static RoomDto from(Room room, BigDecimal totalPrice) {
         return new RoomDto(
                 room.getId(),
                 room.getNumber(),
@@ -23,7 +28,8 @@ public record RoomDto(
                 room.getCategory().getName(),
                 room.getCategory().getCapacity(),
                 room.getCategory().getBasePrice(),
-                room.getAmenities().stream().map(Amenity::getName).sorted().toList()
+                room.getAmenities().stream().map(Amenity::getName).sorted().toList(),
+                totalPrice
         );
     }
 }

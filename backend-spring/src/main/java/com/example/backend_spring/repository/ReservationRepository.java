@@ -15,6 +15,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findAllByOrderByCheckInDesc();
 
+    long countByCheckInAndStatusNot(LocalDate checkIn, ReservationStatus status);
+
+    long countByCheckOutAndStatusNot(LocalDate checkOut, ReservationStatus status);
+
+    long countByStatus(ReservationStatus status);
+
     // Czy pokój ma aktywną rezerwację nachodzącą na termin [from, to)
     @Query("""
             select count(res) > 0 from Reservation res
