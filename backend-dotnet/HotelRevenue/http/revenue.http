@@ -1,0 +1,27 @@
+### Wycena: pt–pon (2 noce weekendowe)
+GET http://localhost:5000/pricing/quote?basePrice=320&from=2026-11-06&to=2026-11-09
+
+### Wycena w lipcu (sezon + weekend)
+GET http://localhost:5000/pricing/quote?basePrice=320&from=2026-07-09&to=2026-07-12
+
+### Rejestracja rezerwacji (normalnie robi to Spring)
+POST http://localhost:5000/revenue/bookings
+Content-Type: application/json
+
+{
+  "reservationId": 100,
+  "roomNumber": "201",
+  "category": "Double",
+  "checkIn": "2026-11-06",
+  "checkOut": "2026-11-09",
+  "totalPrice": 1088.00
+}
+
+### Lista zarejestrowanych rezerwacji
+GET http://localhost:5000/revenue/bookings
+
+### Raport dzienny
+GET http://localhost:5000/revenue/reports/daily?date=2026-11-07&totalRooms=5
+
+### Anulowanie
+PATCH http://localhost:5000/revenue/bookings/100/cancel
