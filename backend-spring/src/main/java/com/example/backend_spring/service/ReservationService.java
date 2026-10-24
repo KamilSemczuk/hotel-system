@@ -1,5 +1,6 @@
 package com.example.backend_spring.service;
 
+import com.example.backend_spring.client.RevenueClient;
 import com.example.backend_spring.dto.CreateReservationRequest;
 import com.example.backend_spring.dto.ReservationDto;
 import com.example.backend_spring.exception.ConflictException;
@@ -14,8 +15,6 @@ import com.example.backend_spring.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -25,12 +24,14 @@ public class ReservationService {
     private final ReservationRepository reservations;
     private final RoomRepository rooms;
     private final GuestRepository guests;
+    private final RevenueClient revenueClient;
 
     public ReservationService(ReservationRepository reservations, RoomRepository rooms,
-                              GuestRepository guests) {
+                              GuestRepository guests, RevenueClient revenueClient) {
         this.reservations = reservations;
         this.rooms = rooms;
         this.guests = guests;
+        this.revenueClient = revenueClient;
     }
 
     @Transactional(readOnly = true)
@@ -63,17 +64,24 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(room, guest, req.checkIn(), req.checkOut());
 
-        // Na razie cena = cena bazowa × liczba nocy (później policzy ją serwis .NET)
-        long nights = ChronoUnit.DAYS.between(req.checkIn(), req.checkOut());
-        reservation.setTotalPrice(room.getCategory().getBasePrice().multiply(BigDecimal.valueOf(nights)));
+        // Cena dynamiczna z serwisu .NET
+        reservation.setTotalPrice(revenueClient.quoteTotal(
+                room.getCategory().getBasePrice(), req.checkIn(), req.checkOut()));
 
-        return ReservationDto.from(reservations.save(reservation));
+        Reservation saved = reservations.save(reservation);
+
+        // Zgłoszenie rezerwacji do systemu przychodów (.NET)
+        revenueClient.registerBooking(saved.getId(), room.getNumber(), room.getCategory().getName(),
+                saved.getCheckIn(), saved.getCheckOut(), saved.getTotalPrice());
+
+        return ReservationDto.from(saved);
     }
 
     public ReservationDto cancel(Long id) {
         Reservation r = get(id);
         requireStatus(r, ReservationStatus.BOOKED, "anulować");
         r.setStatus(ReservationStatus.CANCELLED);
+        revenueClient.cancelBooking(r.getId());
         return ReservationDto.from(r);
     }
 

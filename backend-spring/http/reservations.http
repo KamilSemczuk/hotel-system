@@ -36,3 +36,22 @@ PATCH http://localhost:8080/api/reservations/2/check-out
 
 ### Anulowanie
 PATCH http://localhost:8080/api/reservations/1/cancel
+
+### Wolne pokoje z cenami z .NET (pt–pon)
+GET http://localhost:8080/api/rooms/available?from=2026-11-06&to=2026-11-09
+
+### Rezerwacja na weekend (cena z .NET, zgłoszona do .NET)
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 4,
+  "firstName": "Piotr",
+  "lastName": "Wiśniewski",
+  "email": "piotr.w@example.com",
+  "checkIn": "2026-11-06",
+  "checkOut": "2026-11-09"
+}
+
+### Raport dzienny (Spring + .NET)
+GET http://localhost:8080/api/admin/reports/daily?date=2026-11-07
