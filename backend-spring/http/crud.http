@@ -1,0 +1,41 @@
+### Kategorie (generyczny CRUD)
+GET http://localhost:8080/api/categories
+
+### Nowa kategoria
+POST http://localhost:8080/api/categories
+Content-Type: application/json
+
+{ "name": "Family", "description": "Pokój rodzinny", "capacity": 4, "basePrice": 450.00 }
+
+### Edycja kategorii
+PUT http://localhost:8080/api/categories/4
+Content-Type: application/json
+
+{ "name": "Family", "description": "Pokój rodzinny z aneksem", "capacity": 5, "basePrice": 480.00 }
+
+### Usunięcie kategorii używanej przez pokoje -> 409
+DELETE http://localhost:8080/api/categories/1
+
+### Udogodnienia (generyczny CRUD)
+GET http://localhost:8080/api/amenities
+
+### Nowe udogodnienie
+POST http://localhost:8080/api/amenities
+Content-Type: application/json
+
+{ "name": "Sejf" }
+
+### Nowy pokój z udogodnieniami (M:N)
+POST http://localhost:8080/api/rooms
+Content-Type: application/json
+
+{ "number": "401", "floor": 4, "categoryId": 4, "amenityIds": [1, 2, 6] }
+
+### Przypięcie udogodnienia do pokoju
+PUT http://localhost:8080/api/rooms/1/amenities/3
+
+### Odpięcie udogodnienia od pokoju
+DELETE http://localhost:8080/api/rooms/1/amenities/3
+
+### Usunięcie udogodnienia (najpierw odpina się od pokoi)
+DELETE http://localhost:8080/api/amenities/6

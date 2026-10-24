@@ -1,8 +1,11 @@
 package com.example.backend_spring.controller;
 
 import com.example.backend_spring.dto.RoomDto;
+import com.example.backend_spring.dto.RoomRequest;
 import com.example.backend_spring.service.RoomService;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -29,5 +32,38 @@ public class RoomController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return roomService.findAvailable(from, to);
+    }
+
+    @GetMapping("/{id}")
+    public RoomDto getById(@PathVariable Long id) {
+        return roomService.findById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public RoomDto create(@Valid @RequestBody RoomRequest request) {
+        return roomService.create(request);
+    }
+
+    @PutMapping("/{id}")
+    public RoomDto update(@PathVariable Long id, @Valid @RequestBody RoomRequest request) {
+        return roomService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        roomService.delete(id);
+    }
+
+    // Relacja M:N – przypięcie / odpięcie udogodnienia
+    @PutMapping("/{roomId}/amenities/{amenityId}")
+    public RoomDto addAmenity(@PathVariable Long roomId, @PathVariable Long amenityId) {
+        return roomService.addAmenity(roomId, amenityId);
+    }
+
+    @DeleteMapping("/{roomId}/amenities/{amenityId}")
+    public RoomDto removeAmenity(@PathVariable Long roomId, @PathVariable Long amenityId) {
+        return roomService.removeAmenity(roomId, amenityId);
     }
 }
